@@ -1,6 +1,5 @@
 import os
 import json
-from core.app import celery
 from kafka import KafkaConsumer
 from core.models.body_git import BodyGit
 from core.services.publisher import Publisher
@@ -33,16 +32,11 @@ class DataProduct:
         return 'Data product created'
 
 
-if __name__ == '__main__':
-    dp = DataProduct()
-
-    @celery.task(name="consumer_data_product")
-    def consumer():
-        consumer = KafkaConsumer(
-            'datahub',
-            value_deserializer=lambda m: json.loads(m.decode('utf-8')), # to deserialize kafka.producer.object into dict
-        )
-        for event in consumer:
-            print ("%s:%d:%d: key=%s value=%s" % (event.topic, event.partition, event.offset, event.key, event.value))
-            # dp.create_data_product(value=event.value)
-            dp.create_data_product.delay(event.value)
+def start_worker():
+    consumer = KafkaConsumer(
+        'datahub',
+        value_deserializer=lambda m: json.loads(m.decode('utf-8')), # to deserialize kafka.producer.object into dict
+    )
+    for event in consumer:
+        print ("%s:%d:%d: key=%s value=%s" % (event.topic, event.partition, event.offset, event.key, event.value))
+        DataProduct().create_data_product(value=event.value)
