@@ -19,7 +19,7 @@ class Publisher:
                 value (dict): Event value.
         """
 
-        producer = KafkaProducer(bootstrap_servers = self.kafka_server)
+        producer = KafkaProducer(bootstrap_servers=self.kafka_server)
         producer.send(
             topic=self.topic_name,
             value=json.dumps(value).encode('utf-8'),

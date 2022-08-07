@@ -28,10 +28,4 @@ def create_app():
     from core.routes.webhook import Webhook
     Webhook.register(app, route_base='/webhook')
 
-    # workers
-    @celery.task
-    def consumer():
-        from core.tasks.data_product import start_worker
-        start_worker()
-
     return app

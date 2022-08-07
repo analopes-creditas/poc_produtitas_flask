@@ -1,5 +1,6 @@
 import os
 import json
+from core.app import celery
 from kafka import KafkaConsumer
 from core.models.body_git import BodyGit
 from core.services.publisher import Publisher
@@ -12,8 +13,6 @@ class DataProduct:
         self.git = ApiGitHub()
         self.pub = Publisher()
         self.generate_body = BodyGit()
-        self.kafka_server = os.getenv('KFK_SERVER', '')
-        self.topic_name = os.getenv('KFK_TOPIC_NAME', '')
         self.template_owner = os.getenv('GH_TEMPLATE_OWNER', '')
 
 
@@ -26,17 +25,26 @@ class DataProduct:
 
         body = self.generate_body.create_repos_template(data=value)
         self.git.create_repos_template(
-            template_owner=self.template_owner, template_repo=f"{value['type']}Model", body=body)
+            template_owner=self.template_owner,
+            template_repo=value['type_product'],
+            body=body
+        )
         self.pub.producer(key='data_product_created', value=body)
         print('Data product created')
         return 'Data product created'
 
 
+@celery.task
 def start_worker():
     consumer = KafkaConsumer(
-        'datahub',
-        value_deserializer=lambda m: json.loads(m.decode('utf-8')), # to deserialize kafka.producer.object into dict
+        os.getenv('KFK_TOPIC_NAME', ''),
+        # auto_offset_reset='earliest',
+        # enable_auto_commit=True,
+        # group_id='my-group',
+        # consumer_timeout_ms=1000,
+        value_deserializer=lambda x: json.loads(x.decode('utf-8'))
     )
+    
     for event in consumer:
         print ("%s:%d:%d: key=%s value=%s" % (event.topic, event.partition, event.offset, event.key, event.value))
         DataProduct().create_data_product(value=event.value)

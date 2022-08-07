@@ -16,7 +16,7 @@ class Webhook(FlaskView):
         try:
             body = request.json
 
-            if 'type' not in body or not body['type']:
+            if 'type_product' not in body or not body['type_product']:
                 return jsonify({
                     'code':  'BAD_REQUEST',
                     'message': 'type is required'}), 400
