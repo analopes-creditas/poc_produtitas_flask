@@ -6,7 +6,7 @@ class BodyGit:
     def create_org_repos(self, data: dict) -> dict:
         return {
             'org': data['org'], # required
-            'name': data['name'].replace(' ', '_'), # required
+            'name': data['name'].strip().replace(' ', '_'), # required
             'description': data['description'] if data['description'] else '',
             'homepage': data['homepage'],
             'private': data['private'], # Padrão: false
@@ -28,7 +28,7 @@ class BodyGit:
     def create_repos_template(self, data: dict) -> dict:
         return {
             'owner': data['owner'],
-            'name': data['name'].replace(' ', '_'), # required
+            'name': data['name'].strip().replace(' ', '_'), # required
             'description': data['description'] if data['description'] else '',
             'include_all_branches': True, # Padrão: false
             'private': True # Padrão: false
@@ -39,7 +39,7 @@ class BodyGit:
         return {
             'owner': data['owner'], # required
             'repo': data['repo'], # required
-            'name': data['name'].replace(' ', '_'),
+            'name': data['name'].strip().replace(' ', '_'),
             'description': data['description'],
             'homepage': data['homepage'],
             'private': data['private'], # Padrão: false
@@ -51,11 +51,4 @@ class BodyGit:
             'default_branch': data['default_branch'],
             'allow_squash_merge': data['allow_squash_merge'], # Padrão: true
             'allow_rebase_merge': data['allow_rebase_merge'] # Padrão: true
-        }
-
-
-    def delete_repos(self, data: dict) -> dict:
-        return {
-            'owner': data['owner'], # required
-            'repo': data['repo'] # required
         }

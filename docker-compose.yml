@@ -1,0 +1,22 @@
+version: '3'
+services:
+  rabbitmq:
+    image: "rabbitmq:3.7.14-management"
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbit_user
+      - RABBITMQ_DEFAULT_PASS=rabbit_password
+  api:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - APP_ENV=${APP_ENV}
+    depends_on:
+      - rabbitmq
+  worker:
+    build: .
+    command: celery -A worker worker --loglevel=info
+    environment:
+      - APP_ENV=${APP_ENV}
+    depends_on:
+      - rabbitmq

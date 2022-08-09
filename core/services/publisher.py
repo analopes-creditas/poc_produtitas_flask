@@ -19,13 +19,13 @@ class Publisher:
                 value (dict): Event value.
         """
 
-        producer = KafkaProducer(bootstrap_servers=self.kafka_server)
+        producer = KafkaProducer(bootstrap_servers=[self.kafka_server])
         producer.send(
             topic=self.topic_name,
             value=json.dumps(value).encode('utf-8'),
-            key=bytes(key, encoding='utf-8'),
+            key=key.encode(),
             timestamp_ms=int(datetime.timestamp(datetime.now()))
         )
         producer.flush()
-        print("--- Sent to consumer ---")
+        print("--- Sent to kafka ---")
         return 'Message published'

@@ -10,16 +10,11 @@ class Webhook(FlaskView):
         self.pub = Publisher()
 
 
-    @route('/create/data_product', methods=['POST'])
-    @route('/create/data_product/', methods=['POST'])
-    def create_product(self):
+    @route('/create/data_product/<product>', methods=['POST'])
+    @route('/create/data_product/<product>/', methods=['POST'])
+    def create_product(self, product):
         try:
             body = request.json
-
-            if 'type_product' not in body or not body['type_product']:
-                return jsonify({
-                    'code':  'BAD_REQUEST',
-                    'message': 'type is required'}), 400
 
             if 'name' not in body or not body['name']:
                 return jsonify({
@@ -31,7 +26,7 @@ class Webhook(FlaskView):
                     'code':  'BAD_REQUEST',
                     'message': 'owner is required'}), 400
 
-            response = self.pub.producer(key='create_data_product', value=body)
+            response = self.pub.producer(key=f'create_{product}', value=body)
             return jsonify(response), 200
 
         except Exception as e:

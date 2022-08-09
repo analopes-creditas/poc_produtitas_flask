@@ -1,6 +1,6 @@
 import os
 import json
-from core.app import celery
+from tasks import celery
 from kafka import KafkaConsumer
 from core.models.body_git import BodyGit
 from core.services.publisher import Publisher
@@ -16,17 +16,18 @@ class DataProduct:
         self.template_owner = os.getenv('GH_TEMPLATE_OWNER', '')
 
 
-    def create_data_product(self, value: dict) -> str:
+    def create_data_product(self, key: str, value: dict) -> str:
         """ Create a data product.
 
             Parameters:
-                value (dict): Event message.
+                key (str): Event key.
+                value (dict): Event value.
         """
 
         body = self.generate_body.create_repos_template(data=value)
         self.git.create_repos_template(
             template_owner=self.template_owner,
-            template_repo=value['type_product'],
+            template_repo=key.split('_')[1],
             body=body
         )
         self.pub.producer(key='data_product_created', value=body)
@@ -36,15 +37,18 @@ class DataProduct:
 
 @celery.task
 def start_worker():
+    print("--- Creating Data Product ---")
+
     consumer = KafkaConsumer(
         os.getenv('KFK_TOPIC_NAME', ''),
+        bootstrap_servers=[os.getenv('KFK_SERVER', '')],
         # auto_offset_reset='earliest',
         # enable_auto_commit=True,
-        # group_id='my-group',
+        # group_id='create_notebook',
         # consumer_timeout_ms=1000,
-        value_deserializer=lambda x: json.loads(x.decode('utf-8'))
+        # value_deserializer=lambda m: json.loads(m.decode('utf-8'))
     )
-    
+
     for event in consumer:
         print ("%s:%d:%d: key=%s value=%s" % (event.topic, event.partition, event.offset, event.key, event.value))
-        DataProduct().create_data_product(value=event.value)
+        DataProduct().create_data_product(key=event.key.decode('utf-8'), value=json.loads(event.value.decode('utf-8')))
