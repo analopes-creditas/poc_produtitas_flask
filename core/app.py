@@ -2,6 +2,7 @@ import os
 import urllib3
 import settings
 from flask import Flask
+from celery import Celery
 from flask_cors import CORS
 from datetime import datetime
 from dotenv import load_dotenv
@@ -10,6 +11,13 @@ from dotenv import load_dotenv
 load_dotenv()
 urllib3.disable_warnings()
 started_date = datetime.now()
+
+def make_celery():
+   app = create_app()
+   celery = Celery(app.import_name, broker=settings.BaseConfig.CELERY_BROKER)
+   celery.conf.update(app.config)
+   return celery
+
 
 def create_app():
     # create and configure the app

@@ -38,30 +38,3 @@ class ApiGitHub:
         url = f'{self.url_prefix}/repos/{template_owner}/{template_repo}/generate'
         response = requests.request('POST', url, data=json.dumps(body), headers=self.headers, verify=False)
         return json.loads(response.text)
-
-
-    def update_repos(self, owner: str, repo: str, body: dict) -> dict:
-        """ Update a repository.
-        
-            Parameters:
-                owner (str): The account owner of the repository.
-                repo (str): The name of the repository.
-                body (dict): Data to create the repository.
-        """
-
-        url = f'{self.url_prefix}/repos/{owner}/{repo}'
-        response = requests.request('PATCH', url, data=json.dumps(body), headers=self.headers, verify=False)
-        return json.loads(response.text)
-
-
-    def delete_repos(self, owner: str, repo: str) -> str:
-        """ Delete a repository.
-        
-            Parameters:
-                owner (str): The account owner of the repository.
-                repo (str): The name of the repository.
-        """
-
-        url = f'{self.url_prefix}/repos/{owner}/{repo}'
-        response = requests.request('DELETE', url, headers=self.headers, verify=False)
-        return json.loads(response.text)

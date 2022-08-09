@@ -1,5 +1,3 @@
-import os
-
 
 class BodyGit:
 
@@ -32,23 +30,4 @@ class BodyGit:
             'description': data['description'] if data['description'] else '',
             'include_all_branches': True, # Padrão: false
             'private': True # Padrão: false
-        }
-
-
-    def update_repos(self, data: dict) -> dict:
-        return {
-            'owner': data['owner'], # required
-            'repo': data['repo'], # required
-            'name': data['name'].strip().replace(' ', '_'),
-            'description': data['description'],
-            'homepage': data['homepage'],
-            'private': data['private'], # Padrão: false
-            'visibility': data['visibility'], # public, private, internal
-            'has_issues': data['has_issues'], # Padrão: true
-            'has_projects': data['has_projects'], # Padrão: true
-            'has_wiki': data['has_wiki'], # Padrão: true
-            'is_template': data['is_template'], # Padrão: false
-            'default_branch': data['default_branch'],
-            'allow_squash_merge': data['allow_squash_merge'], # Padrão: true
-            'allow_rebase_merge': data['allow_rebase_merge'] # Padrão: true
         }
