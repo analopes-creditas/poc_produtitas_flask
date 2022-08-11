@@ -1,9 +1,9 @@
 from core.app import create_app
-from core.tasks.data_product import create_product
+from core.tasks.create_data_product import start_task_create
 
 
 # start workers
-create_product()
+start_task_create()
 
 
 app = create_app()

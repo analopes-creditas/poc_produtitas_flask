@@ -9,7 +9,7 @@ from core.services.api_github import ApiGitHub
 
 celery = make_celery()
 
-class DataProduct:
+class CreateDataProduct:
 
     def __init__(self):
         self.git = ApiGitHub()
@@ -18,7 +18,7 @@ class DataProduct:
         self.template_owner = os.getenv('GH_TEMPLATE_OWNER', '')
 
 
-    def create_repository(self, key: str, value: dict) -> str:
+    def provision(self, key: str, value: dict) -> str:
         """ Create a data product.
 
             Parameters:
@@ -38,7 +38,7 @@ class DataProduct:
 
 
 @celery.task
-def create_product():
+def start_task_create():
     print("--- Creating Data Product ---")
 
     consumer = KafkaConsumer(
@@ -53,4 +53,4 @@ def create_product():
 
     for event in consumer:
         print ("%s:%d:%d: key=%s value=%s" % (event.topic, event.partition, event.offset, event.key, event.value))
-        DataProduct().create_repository(key=event.key.decode('utf-8'), value=json.loads(event.value.decode('utf-8')))
+        CreateDataProduct().provision(key=event.key.decode('utf-8'), value=json.loads(event.value.decode('utf-8')))
