@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "Produtitas"
+name = "api-produtitas"
 version = "0.1.0"
-description = "Microserviço responsável pelo gerenciamento de produto de dados"
+description = "API responsável pelo gerenciamento de produto de dados"
 authors = ["anapalopes <ana.lopes1@creditas.com>"]
 
 [tool.poetry.dependencies]
