@@ -1,6 +1,5 @@
 import os
 import json
-from unicodedata import name
 from kafka import KafkaConsumer
 from core.app import make_celery
 from core.models.body_git import BodyGit
